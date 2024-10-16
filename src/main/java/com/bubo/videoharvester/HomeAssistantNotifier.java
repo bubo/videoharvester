@@ -19,6 +19,9 @@ import java.util.regex.Matcher;
 
     private static final Logger logger = LoggerFactory.getLogger(HomeAssistantNotifier.class);
 
+    private static final DateTimeFormatter TIME_FORMATTER =
+            DateTimeFormatter.ofPattern("'['HH:mm:ss']'");
+
     @Value("${homeassistant.api.url}")
     private String apiUrl;
 
@@ -45,7 +48,7 @@ import java.util.regex.Matcher;
             con.setReadTimeout(5000);
             con.setDoOutput(true);
 
-            message = "[" + LocalTime.now().format(DateTimeFormatter.ISO_TIME) + "]" + message;
+            message = TIME_FORMATTER.format(LocalTime.now()) + message;
 
             String jsonInputString =
                     String.format("{\"title\": \"%s\", \"message\": \"%s\"}", escapeJson(title),
