@@ -1,0 +1,16 @@
+spring.application.name=VideoHarvester
+spring.datasource.url=jdbc:h2:file:./database/video_harvester
+spring.datasource.driverClassName=org.h2.Driver
+spring.datasource.username=
+spring.datasource.password=
+spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+spring.h2.console.enabled=true
+spring.h2.console.path=/h2-console
+spring.jpa.hibernate.ddl-auto=update
+#-------------------------------------------------------------
+homeassistant.api.url=
+homeassistant.token=
+homeassistant.message.title=Video Harvester
+videoharvester.video.location.igri=
+videoharvester.video.location.ostrova=
+videoharvester.video.download.script=
