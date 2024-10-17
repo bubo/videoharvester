@@ -1,5 +1,6 @@
 package com.bubo.videoharvester;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,6 +22,8 @@ import java.util.regex.Matcher;
 
     private static final DateTimeFormatter TIME_FORMATTER =
             DateTimeFormatter.ofPattern("'['HH:mm:ss']'");
+
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     @Value("${homeassistant.api.url}")
     private String apiUrl;
@@ -50,9 +53,13 @@ import java.util.regex.Matcher;
 
             message = TIME_FORMATTER.format(LocalTime.now()) + message;
 
-            String jsonInputString =
-                    String.format("{\"title\": \"%s\", \"message\": \"%s\"}", escapeJson(title),
-                            escapeJson(message));
+            HomeAssistantNotification notification = HomeAssistantNotification.builder()
+                    .message(message)
+                    .title(title)
+                    .data(HomeAssistantNotification.Data.builder().ttl(0).priority("high").build())
+                    .build();
+
+            String jsonInputString = objectMapper.writeValueAsString(notification);
 
             try (OutputStream os = con.getOutputStream()) {
                 byte[] input = jsonInputString.getBytes(StandardCharsets.UTF_8);
@@ -88,13 +95,5 @@ import java.util.regex.Matcher;
             format = format.replaceFirst("\\{}", Matcher.quoteReplacement(String.valueOf(arg)));
         }
         return format;
-    }
-
-    private String escapeJson(String value) {
-        if (value == null) {
-            return null;
-        }
-        return value.replace("\"", "\\\"").replace("\\", "\\\\").replace("\n", "\\n")
-                .replace("\r", "\\r");
     }
 }
