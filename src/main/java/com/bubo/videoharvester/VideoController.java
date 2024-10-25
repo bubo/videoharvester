@@ -7,10 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -23,6 +20,9 @@ public class VideoController {
 
     @Autowired
     private VideoRepository videoRepository;
+
+    @Autowired
+    private VideoService videoService;
 
     @GetMapping("/videos")
     public String getAll(@RequestParam(required = false) String show, Model model) {
@@ -57,5 +57,9 @@ public class VideoController {
         return "redirect:/videos";
     }
 
-
+    @PostMapping("/videos/force-check")
+    @ResponseBody
+    public void forceCheck() {
+        videoService.forceCheckVideosAsync();
+    }
 }

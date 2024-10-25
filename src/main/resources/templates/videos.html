@@ -9,6 +9,7 @@
 <body>
 <div class="container mt-5">
     <h1 class="text-center">Videos List</h1>
+    <button class="btn btn-primary" id="forceCheckBtn">Force Check</button>
     <form method="get" th:action="@{/videos}">
         <div class="form-group">
             <label for="show">Filter by show:</label>
@@ -43,8 +44,24 @@
     </table>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#forceCheckBtn').on('click', function () {
+            $.ajax({
+                type: 'POST',
+                url: '/videos/force-check',
+                success: function () {
+                    alert('Force check triggered successfully.');
+                },
+                error: function () {
+                    alert('Failed to trigger force check.');
+                }
+            });
+        });
+    });
+</script>
 </body>
 </html>

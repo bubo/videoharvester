@@ -35,7 +35,7 @@ public abstract class VideoDownloader {
 
     protected abstract Logger getLogger();
 
-    protected void checkForNewVideo() {
+    public void checkForNewVideo() {
         getLogger().info("Checking for new videos...");
         try {
             Document doc = Jsoup.connect(getUrl()).get();
