@@ -64,7 +64,7 @@ import java.time.LocalDateTime;
                     DIV_SHOW_THUMBNAIL_SHOW_WRAPPER_SC_VAU_9_Q_9_0_HK_ZS_KS)) {
 
                 Video video = parseVideo(videoElement);
-                video.setDownloadTimestamp(LocalDateTime.MIN);
+                video.setDownloadTimestamp(LocalDateTime.of(1970, 1, 1, 0, 0));
                 videoRepository.save(video);
             }
         }
