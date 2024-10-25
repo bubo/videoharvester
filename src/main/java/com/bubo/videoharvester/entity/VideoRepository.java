@@ -16,4 +16,7 @@ public interface VideoRepository extends JpaRepository<Video, Long> {
 
     @Query("SELECT COUNT(v) FROM Video v WHERE v.show = :show")
     long countByShow(@Param("show") String show);
+
+    @Query("SELECT DISTINCT v.show FROM Video v")
+    List<String> findDistinctShowValues();
 }

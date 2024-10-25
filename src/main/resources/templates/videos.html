@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Videos List</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="text-center">Videos List</h1>
+    <form method="get" th:action="@{/videos}">
+        <div class="form-group">
+            <label for="show">Filter by show:</label>
+            <select class="form-control" id="show" name="show" onchange="this.form.submit()">
+                <option value="">Select a show</option>
+                <option th:each="show : ${shows}" th:text="${show}" th:value="${show}"></option>
+            </select>
+        </div>
+    </form>
+    <table class="table table-striped" id="videosTable">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Date</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="video : ${videos}">
+            <td th:text="${video.id}"></td>
+            <td th:text="${video.title}"></td>
+            <td th:text="${#temporals.format(video.downloadTimestamp, 'dd-MM-yyyy HH:mm')}">2024-10-22</td>
+            <td>
+                <form method="post" onsubmit="return confirm('Are you sure you want to delete this video?');"
+                      th:action="@{/videos/delete/{videoId}(videoId=${video.id})}">
+                    <button class="btn btn-danger btn-sm" type="submit">Delete</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
