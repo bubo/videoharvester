@@ -19,3 +19,5 @@ spring.thymeleaf.cache=false
 spring.thymeleaf.prefix=classpath:/templates/
 spring.thymeleaf.suffix=.html
 spring.thymeleaf.mode=HTML
+videoharvester.ostrova.cron=0 * 22-23 * * *
+videoharvester.igri.cron=0 * 22-23 * * *
