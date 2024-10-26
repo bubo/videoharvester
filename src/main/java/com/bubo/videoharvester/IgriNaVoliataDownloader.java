@@ -59,6 +59,11 @@ public class IgriNaVoliataDownloader extends VideoDownloader {
         String subtitle = Optional.ofNullable(
                         videoElement.selectFirst("p.cards-shared__VideoSubTitle-sc-o5cgdb-1.eACHzS"))
                 .map(Element::text).orElse("");
-        return title + " " + subtitle;
+        
+        String[] parts = title.split("\\(");
+        String formattedTitle = parts[0].trim();
+        String date = parts.length > 1 ? parts[1].replace(")", "").trim() : "";
+
+        return formattedTitle + " " + subtitle + " (" + date + ")";
     }
 }
