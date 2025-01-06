@@ -48,18 +48,18 @@ public class IgriNaVoliataDownloader extends VideoDownloader {
 
     @Override
     protected String getCssQuery() {
-        return "div.ShowThumbnail__ShowWrapper-sc-vau9q9-0.hkZsKs";
+        return "div[data-sentry-element=ShowWrapper]";
     }
 
     @Override
     protected String extractTitle(Element videoElement) {
         String title = Optional.ofNullable(
-                        videoElement.selectFirst("p.cards-shared__VideoTitle-sc-o5cgdb-0.eNzUXb"))
+                        videoElement.selectFirst("p[class^=cards-shared__VideoTitle]"))
                 .map(Element::text).orElse("");
         String subtitle = Optional.ofNullable(
-                        videoElement.selectFirst("p.cards-shared__VideoSubTitle-sc-o5cgdb-1.eACHzS"))
+                        videoElement.selectFirst("p[class^=cards-shared__VideoSubTitle]"))
                 .map(Element::text).orElse("");
-        
+
         String[] parts = title.split("\\(");
         String formattedTitle = parts[0].trim();
         String date = parts.length > 1 ? parts[1].replace(")", "").trim() : "";

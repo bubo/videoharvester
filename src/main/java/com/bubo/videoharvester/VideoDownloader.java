@@ -16,10 +16,8 @@ public abstract class VideoDownloader {
 
     @Autowired
     protected VideoRepository videoRepository;
-
     @Autowired
     protected HomeAssistantNotifier homeAssistantNotifier;
-
     @Value("${videoharvester.video.download.script}")
     protected String downloadScript;
 
