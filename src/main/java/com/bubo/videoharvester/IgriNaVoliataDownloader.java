@@ -1,8 +1,10 @@
 package com.bubo.videoharvester;
 
+import com.bubo.videoharvester.entity.VideoRepository;
 import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -19,6 +21,10 @@ public class IgriNaVoliataDownloader extends VideoDownloader {
 
     @Value("${videoharvester.video.location.igri}")
     private String path;
+
+    protected IgriNaVoliataDownloader(@Autowired HomeAssistantNotifier homeAssistantNotifier,@Autowired VideoRepository videoRepository) {
+        super(homeAssistantNotifier, videoRepository);
+    }
 
     @Scheduled(cron = "${videoharvester.igri.cron}")
     @Override

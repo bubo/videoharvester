@@ -1,8 +1,10 @@
 package com.bubo.videoharvester;
 
+import com.bubo.videoharvester.entity.VideoRepository;
 import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -18,6 +20,11 @@ public class OstrovaDownloader extends VideoDownloader {
     @Value("${videoharvester.video.location.ostrova}")
     private String path;
 
+    protected OstrovaDownloader(@Autowired HomeAssistantNotifier homeAssistantNotifier,
+                                @Autowired VideoRepository videoRepository) {
+        super(homeAssistantNotifier, videoRepository);
+    }
+
     @Scheduled(cron = "${videoharvester.ostrova.cron}")
     @Override
     public void checkForNewVideo() {
@@ -31,7 +38,7 @@ public class OstrovaDownloader extends VideoDownloader {
 
     @Override
     protected String getShowName() {
-        return "Ostrova";
+        return "Кой да знае";
     }
 
     @Override
@@ -41,7 +48,7 @@ public class OstrovaDownloader extends VideoDownloader {
 
     @Override
     protected String getUrl() {
-        return "https://btvplus.bg/produkt/predavaniya/59496/ostrovat-na-100-te-grivni";
+        return "https://btvplus.bg/produkt/predavaniya/54134/koj-da-znae";
     }
 
     @Override

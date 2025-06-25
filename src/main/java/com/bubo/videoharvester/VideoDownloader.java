@@ -14,12 +14,16 @@ import java.time.LocalDateTime;
 
 public abstract class VideoDownloader {
 
-    @Autowired
-    protected VideoRepository videoRepository;
-    @Autowired
-    protected HomeAssistantNotifier homeAssistantNotifier;
+    private final HomeAssistantNotifier homeAssistantNotifier;
+    private final VideoRepository videoRepository;
+
     @Value("${videoharvester.video.download.script}")
     protected String downloadScript;
+
+    protected VideoDownloader(@Autowired HomeAssistantNotifier homeAssistantNotifier, @Autowired VideoRepository videoRepository) {
+        this.homeAssistantNotifier = homeAssistantNotifier;
+        this.videoRepository = videoRepository;
+    }
 
     protected abstract String getShowName();
 
