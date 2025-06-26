@@ -1,7 +1,8 @@
-package com.bubo.videoharvester;
+package com.bubo.videoharvester.controllers;
 
+import com.bubo.videoharvester.VideoService;
 import com.bubo.videoharvester.entity.Video;
-import com.bubo.videoharvester.entity.VideoRepository;
+import com.bubo.videoharvester.repository.VideoRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

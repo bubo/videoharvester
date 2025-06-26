@@ -1,6 +1,6 @@
 package com.bubo.videoharvester;
 
-import com.bubo.videoharvester.entity.VideoRepository;
+import com.bubo.videoharvester.repository.VideoRepository;
 import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

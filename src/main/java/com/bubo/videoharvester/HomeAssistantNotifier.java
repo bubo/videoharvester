@@ -16,14 +16,17 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.regex.Matcher;
 
-@Component public class HomeAssistantNotifier {
+@Component
+public class HomeAssistantNotifier {
 
     private static final Logger logger = LoggerFactory.getLogger(HomeAssistantNotifier.class);
 
-    private static final DateTimeFormatter TIME_FORMATTER =
-            DateTimeFormatter.ofPattern("'['HH:mm:ss']'");
+    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("'['HH:mm:ss']'");
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Value("${homeassistant.enabled:false}")
+    private boolean isEnabled;
 
     @Value("${homeassistant.api.url}")
     private String apiUrl;
@@ -53,11 +56,8 @@ import java.util.regex.Matcher;
 
             message = TIME_FORMATTER.format(LocalTime.now()) + message;
 
-            HomeAssistantNotification notification = HomeAssistantNotification.builder()
-                    .message(message)
-                    .title(title)
-                    .data(HomeAssistantNotification.Data.builder().ttl(0).priority("high").build())
-                    .build();
+            HomeAssistantNotification notification = HomeAssistantNotification.builder().message(message).title(title)
+                    .data(HomeAssistantNotification.Data.builder().ttl(0).priority("high").build()).build();
 
             String jsonInputString = objectMapper.writeValueAsString(notification);
 
@@ -67,6 +67,7 @@ import java.util.regex.Matcher;
             }
 
             int responseCode = con.getResponseCode();
+
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 logger.debug("Notification sent successfully.");
             } else {
@@ -87,10 +88,13 @@ import java.util.regex.Matcher;
 
     public void sendNotification(String format, Object... arguments) {
 
-        sendNotification(formatMessage(format, arguments));
+        if (isEnabled) {
+            sendNotification(formatMessage(format, arguments));
+        }
     }
 
     private String formatMessage(String format, Object... args) {
+
         for (Object arg : args) {
             format = format.replaceFirst("\\{}", Matcher.quoteReplacement(String.valueOf(arg)));
         }

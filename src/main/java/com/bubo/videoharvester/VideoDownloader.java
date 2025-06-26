@@ -1,7 +1,8 @@
 package com.bubo.videoharvester;
 
+import com.bubo.videoharvester.entity.Show;
 import com.bubo.videoharvester.entity.Video;
-import com.bubo.videoharvester.entity.VideoRepository;
+import com.bubo.videoharvester.repository.VideoRepository;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -20,7 +21,8 @@ public abstract class VideoDownloader {
     @Value("${videoharvester.video.download.script}")
     protected String downloadScript;
 
-    protected VideoDownloader(@Autowired HomeAssistantNotifier homeAssistantNotifier, @Autowired VideoRepository videoRepository) {
+    @Autowired
+    protected VideoDownloader(HomeAssistantNotifier homeAssistantNotifier, VideoRepository videoRepository) {
         this.homeAssistantNotifier = homeAssistantNotifier;
         this.videoRepository = videoRepository;
     }
@@ -67,9 +69,7 @@ public abstract class VideoDownloader {
         try {
             getLogger().info("Downloading video with url: {}", video.getUrl());
             String file = getPath() + "/" + video.getTitle() + ".%(ext)s";
-            ProcessBuilder processBuilder =
-                    new ProcessBuilder("/bin/bash", downloadScript,
-                            "-o", file, video.getUrl());
+            ProcessBuilder processBuilder = new ProcessBuilder("/bin/bash", downloadScript, "-o", file, video.getUrl());
             processBuilder.inheritIO();
             homeAssistantNotifier.sendNotification("Starting download: {}", video.getTitle());
             Process process = processBuilder.start();
@@ -94,6 +94,6 @@ public abstract class VideoDownloader {
         Element linkElement = videoElement.selectFirst("a");
         String videoUrl = linkElement != null ? linkElement.absUrl("href") : "";
         String title = extractTitle(videoElement);
-        return new Video(title, videoUrl, getShowName());
+        return new Video(title, videoUrl, new Show());
     }
 }
