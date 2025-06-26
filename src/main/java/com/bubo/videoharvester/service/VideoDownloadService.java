@@ -1,9 +1,10 @@
 package com.bubo.videoharvester.service;
 
-import com.bubo.videoharvester.HomeAssistantNotifier;
 import com.bubo.videoharvester.downloaders.BaseVideoDownloader;
 import com.bubo.videoharvester.entity.Show;
 import com.bubo.videoharvester.entity.Video;
+import com.bubo.videoharvester.notifications.HomeAssistantNotifier;
+import com.bubo.videoharvester.notifications.NotificationService;
 import com.bubo.videoharvester.repository.ShowRepository;
 import com.bubo.videoharvester.repository.VideoRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,18 +27,18 @@ public class VideoDownloadService {
 
     private final ShowRepository showRepository;
 
-    private final HomeAssistantNotifier homeAssistantNotifier;
+    private final NotificationService notificationService;
 
     @Value("${videoharvester.video.max.retry.counter:10}")
     protected long maxRetryCounter;
 
     public VideoDownloadService(Map<String, BaseVideoDownloader> downloaderMap, VideoRepository videoRepository,
-                                ShowRepository showRepository, HomeAssistantNotifier homeAssistantNotifier) {
+                                ShowRepository showRepository, HomeAssistantNotifier notificationService) {
 
         this.downloaderMap = downloaderMap;
         this.videoRepository = videoRepository;
         this.showRepository = showRepository;
-        this.homeAssistantNotifier = homeAssistantNotifier;
+        this.notificationService = notificationService;
     }
 
     @Async
@@ -63,16 +64,16 @@ public class VideoDownloadService {
 
                 video.setStatus(DOWNLOADING);
                 videoRepository.save(video);
-                homeAssistantNotifier.sendNotification("Starting download: {}", video.getTitle());
+                notificationService.sendNotification("Starting download: {}", video.getTitle());
 
                 if (downloaderMap.get(show.getProvider()).downloadVideo(video, show)) {
 
                     video.setStatus(Video.Status.DOWNLOADED);
-                    homeAssistantNotifier.sendNotification("{} is downloaded", video.getTitle());
+                    notificationService.sendNotification("{} is downloaded", video.getTitle());
                 } else {
 
                     processFailedVideo(video);
-                    homeAssistantNotifier.sendNotification("{} failed downloading", video.getTitle());
+                    notificationService.sendNotification("{} failed downloading", video.getTitle());
                 }
                 videoRepository.save(video);
             }

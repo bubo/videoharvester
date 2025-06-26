@@ -1,23 +1,24 @@
-package com.bubo.videoharvester;
+package com.bubo.videoharvester.notifications;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.regex.Matcher;
 
-@Component
-public class HomeAssistantNotifier {
+@Service
+public class HomeAssistantNotifier implements NotificationService {
 
     private static final Logger logger = LoggerFactory.getLogger(HomeAssistantNotifier.class);
 
@@ -37,6 +38,7 @@ public class HomeAssistantNotifier {
     @Value("${homeassistant.message.title}")
     private String title;
 
+    @Override
     public void sendNotification(String message) {
 
         if (token == null || token.isBlank()) {
@@ -45,7 +47,7 @@ public class HomeAssistantNotifier {
         HttpURLConnection con = null;
 
         try {
-            URL url = new URL(apiUrl);
+            URL url = URI.create(apiUrl).toURL();
             con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("POST");
             con.setRequestProperty("Authorization", "Bearer " + token);
@@ -86,6 +88,7 @@ public class HomeAssistantNotifier {
         }
     }
 
+    @Override
     public void sendNotification(String format, Object... arguments) {
 
         if (isEnabled) {
