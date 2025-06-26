@@ -43,7 +43,6 @@ public class Video {
         this.title = title;
         this.url = url;
         this.show = show;
-        this.status = Status.PENDING;
     }
 
     public void incrementRetryCount() {
@@ -52,6 +51,6 @@ public class Video {
     }
 
     public enum Status {
-        PENDING, DOWNLOADING, DOWNLOADED, FAILED, FAILED_PERMANENTLY, DELETED
+        DOWNLOADING, DOWNLOADED, FAILED, FAILED_PERMANENTLY, SKIPPED, DELETED
     }
 }

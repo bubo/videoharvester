@@ -55,7 +55,11 @@ public class VideoDownloadService {
         for (Show show : shows) {
 
             List<Video> allVideosToProcess = new ArrayList<>();
-            allVideosToProcess.addAll(getNewVideos(show));
+            List<Video> newVideos = getNewVideos(show);
+            if (initialiseDatabase(show, newVideos)) {
+                continue;
+            }
+            allVideosToProcess.addAll(newVideos);
             allVideosToProcess.addAll(
                     videoRepository.findByShowAndStatusAndNextRetryTimestampBefore(show, Video.Status.FAILED,
                                                                                    LocalDateTime.now()));
@@ -78,6 +82,20 @@ public class VideoDownloadService {
                 videoRepository.save(video);
             }
         }
+    }
+
+    private boolean initialiseDatabase(Show show, List<Video> newVideos) {
+
+        if (videoRepository.countByShow(show) == 0) {
+
+            for (Video video : newVideos) {
+
+                video.setStatus(Video.Status.SKIPPED);
+                video.setDownloadTimestamp(LocalDateTime.of(1970, 1, 1, 0, 0));
+            }
+            videoRepository.saveAll(newVideos);
+        }
+        return false;
     }
 
     private void processFailedVideo(Video video) {

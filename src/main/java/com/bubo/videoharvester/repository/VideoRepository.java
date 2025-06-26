@@ -4,7 +4,6 @@ import com.bubo.videoharvester.entity.Show;
 import com.bubo.videoharvester.entity.Video;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,8 +17,7 @@ public interface VideoRepository extends JpaRepository<Video, Long> {
 
     List<Video> findAllByShow(String show);
 
-    @Query("SELECT COUNT(v) FROM Video v WHERE v.show = :show")
-    long countByShow(@Param("show") String show);
+    long countByShow(Show show);
 
     @Query("SELECT DISTINCT v.show FROM Video v")
     List<String> findDistinctShowValues();
