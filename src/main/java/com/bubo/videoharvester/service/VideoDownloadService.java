@@ -6,8 +6,8 @@ import com.bubo.videoharvester.entity.Show;
 import com.bubo.videoharvester.entity.Video;
 import com.bubo.videoharvester.repository.ShowRepository;
 import com.bubo.videoharvester.repository.VideoRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +31,6 @@ public class VideoDownloadService {
     @Value("${videoharvester.video.max.retry.counter:10}")
     protected long maxRetryCounter;
 
-    @Autowired
     public VideoDownloadService(Map<String, BaseVideoDownloader> downloaderMap, VideoRepository videoRepository,
                                 ShowRepository showRepository, HomeAssistantNotifier homeAssistantNotifier) {
 
@@ -39,6 +38,12 @@ public class VideoDownloadService {
         this.videoRepository = videoRepository;
         this.showRepository = showRepository;
         this.homeAssistantNotifier = homeAssistantNotifier;
+    }
+
+    @Async
+    public void forceProcessVideosAsync() {
+
+        processVideos();
     }
 
     @Scheduled(cron = "${videoharvester.cron}")

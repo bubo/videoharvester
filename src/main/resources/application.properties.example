@@ -21,11 +21,7 @@ homeassistant.token=
 homeassistant.message.title=Video Harvester
 homeassistant.enabled=false
 
-videoharvester.video.location.igri=
-videoharvester.video.location.ostrova=
 videoharvester.video.download.script=
 videoharvester.video.max.retry.counter=10
 
-videoharvester.ostrova.cron=0 * 22-23 * * *
-videoharvester.igri.cron=0 * 22-23 * * *
 videoharvester.cron=*/5 * * * *
