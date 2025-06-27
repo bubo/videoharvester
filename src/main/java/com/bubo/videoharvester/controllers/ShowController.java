@@ -31,8 +31,6 @@ public class ShowController {
     @GetMapping
     public String getAll(Model model) {
 
-        LOGGER.info("Getting all shows");
-
         model.addAttribute("shows", showRepository.findAll());
         return "shows";
     }
@@ -40,33 +38,23 @@ public class ShowController {
     @ModelAttribute("providers")
     public List<String> getProviders() {
 
-        LOGGER.info("Getting providers");
-
         return videoDownloadService.getProviders();
     }
 
     @PostMapping("/delete/{showId}")
-    public String getProviders(@PathVariable("showId") Long showId) {
-
-        LOGGER.info("Deleting show with ID: {}", showId);
+    public String deleteShow(@PathVariable("showId") Long showId) {
 
         showRepository.deleteById(showId);
-        return "redirect:/show/";
+        return "redirect:/shows";
     }
 
     @GetMapping({"/create", "/edit/{id}"})
     public String showForm(@PathVariable(required = false) Long id, Model model) {
 
-        LOGGER.info("Accessing show form for {}", (id != null)
-                                                  ? "editing show with ID: " + id
-                                                  : "creating a new show");
-
         Show show = (id != null)
                     ? showRepository.findById(id)
                             .orElseThrow(() -> new IllegalArgumentException("Invalid show ID: " + id))
                     : new Show();
-
-        LOGGER.debug("Loaded show: {}", show);
 
         model.addAttribute("show", show);
         return "create-edit-show";
@@ -89,6 +77,6 @@ public class ShowController {
             showRepository.save(show);
             LOGGER.info("Created show: {}", show);
         }
-        return "redirect:/show";
+        return "redirect:/shows";
     }
 }

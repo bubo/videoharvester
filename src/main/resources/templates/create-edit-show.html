@@ -25,7 +25,7 @@
             <label for="isEnabled">Show Status</label>
             <select class="form-control" id="isEnabled" name="isEnabled">
                 <option th:selected="${show.isEnabled}" th:value="true">Enabled</option>
-                <option th:unless="${show.isEnabled}" th:value="false">Disabled</option>
+                <option th:selected="${!show.isEnabled}" th:value="false">Disabled</option>
             </select>
         </div>
         <div class="form-group">
@@ -41,7 +41,12 @@
             <label for="provider">Provider</label>
             <select class="form-control" id="provider" name="provider">
                 <option disabled selected value="">Select a provider</option>
-                <option th:each="provider : ${providers}" th:text="${provider}" th:value="${provider}"></option>
+                <option
+                        th:each="provider : ${providers}"
+                        th:selected="${provider == show.provider}"
+                        th:text="${provider}"
+                        th:value="${provider}">
+                </option>
             </select>
         </div>
         <div class="form-group text-right">
