@@ -13,14 +13,14 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @SpringBootApplication
 @EnableScheduling
 @EnableAsync
-@EnableJpaRepositories(basePackages = "com.bubo.videoharvester.entity")
+@EnableJpaRepositories(basePackages = "com.bubo.videoharvester.repository")
 @EnableTransactionManagement
-public class VideoHarvesterApplication implements
-        CommandLineRunner {
+public class VideoHarvesterApplication implements CommandLineRunner {
 
     private static final Logger logger = LoggerFactory.getLogger(VideoHarvesterApplication.class);
 
     public static void main(String[] args) {
+
         SpringApplication.run(VideoHarvesterApplication.class, args);
     }
 

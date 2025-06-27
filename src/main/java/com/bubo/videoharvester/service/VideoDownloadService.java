@@ -41,6 +41,11 @@ public class VideoDownloadService {
         this.notificationService = notificationService;
     }
 
+    public List<String> getProviders() {
+
+        return downloaderMap.keySet().stream().sorted().toList();
+    }
+
     @Async
     public void forceProcessVideosAsync() {
 
@@ -50,7 +55,7 @@ public class VideoDownloadService {
     @Scheduled(cron = "${videoharvester.cron}")
     public void processVideos() {
 
-        List<Show> shows = showRepository.findAllByEnabledTrue();
+        List<Show> shows = showRepository.findAllByIsEnabledTrue();
 
         for (Show show : shows) {
 

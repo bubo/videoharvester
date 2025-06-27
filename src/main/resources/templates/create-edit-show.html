@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title th:text="${show.id != null ? 'Edit Show' : 'Create Show'}">Create/Edit Show</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="text-center" th:text="${show.id != null ? 'Edit Show' : 'Create New Show'}">Create/Edit Show</h1>
+    <div class="mb-4">
+        <a class="btn btn-secondary" href="/shows">Back to Shows</a>
+    </div>
+    <form class="p-4 border rounded shadow-sm" method="post"
+          th:action="@{${show.id != null} ? '/shows/edit/' + ${show.id} : '/shows/create'}">
+
+        <!-- Show Title -->
+        <div class="form-group">
+            <label for="title">Show Title</label>
+            <input class="form-control" id="title" name="title" placeholder="Enter show title" required
+                   th:value="${show.title}" type="text">
+        </div>
+        <div class="form-group">
+            <label for="isEnabled">Show Status</label>
+            <select class="form-control" id="isEnabled" name="isEnabled">
+                <option th:selected="${show.isEnabled}" th:value="true">Enabled</option>
+                <option th:unless="${show.isEnabled}" th:value="false">Disabled</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="url">URL</label>
+            <input class="form-control" id="url" name="url" placeholder="Enter URL" th:value="${show.url}" type="url">
+        </div>
+        <div class="form-group">
+            <label for="path">Path</label>
+            <input class="form-control" id="path" name="path" placeholder="Enter Path" th:value="${show.path}"
+                   type="text">
+        </div>
+        <div class="form-group">
+            <label for="provider">Provider</label>
+            <select class="form-control" id="provider" name="provider">
+                <option disabled selected value="">Select a provider</option>
+                <option th:each="provider : ${providers}" th:text="${provider}" th:value="${provider}"></option>
+            </select>
+        </div>
+        <div class="form-group text-right">
+            <button class="btn btn-primary" th:text="${show.id != null ? 'Update Show' : 'Create Show'}" type="submit">
+                Submit
+            </button>
+            <a class="btn btn-secondary" href="/shows">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

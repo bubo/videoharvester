@@ -1,6 +1,8 @@
 package com.bubo.videoharvester.controllers;
 
+import com.bubo.videoharvester.entity.Show;
 import com.bubo.videoharvester.entity.Video;
+import com.bubo.videoharvester.repository.ShowRepository;
 import com.bubo.videoharvester.repository.VideoRepository;
 import com.bubo.videoharvester.service.VideoDownloadService;
 import org.slf4j.Logger;
@@ -9,7 +11,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 
@@ -22,43 +23,40 @@ public class VideoController {
 
     private final VideoDownloadService videoDownloadService;
 
-    public VideoController(VideoRepository videoRepository, VideoDownloadService videoDownloadService) {
+    private final ShowRepository showRepository;
+
+    public VideoController(VideoRepository videoRepository, VideoDownloadService videoDownloadService,
+                           ShowRepository showRepository) {
 
         this.videoRepository = videoRepository;
         this.videoDownloadService = videoDownloadService;
+        this.showRepository = showRepository;
     }
 
     @GetMapping("/videos")
-    public String getAll(@RequestParam(required = false) String show, Model model) {
+    public String getAll(@RequestParam(required = false) Long showId, Model model) {
 
         List<Video> videos;
-        if (show != null && !show.isEmpty()) {
-            videos = videoRepository.findAllByShow(show);
+        if (showId != null) {
+            LOGGER.info("Getting videos for show ID: {}", showId);
+            videos = videoRepository.findByShowId(showId);
+            Show show = showRepository.findById(showId).orElseThrow();
+            model.addAttribute("show", show);
         } else {
+            LOGGER.info("Getting all videos");
             videos = videoRepository.findAll();
         }
-        for (Video video : videos) {
-            if (video.getDownloadTimestamp().getYear() == 169087565) {
-                video.setDownloadTimestamp(LocalDateTime.of(1970, 1, 1, 0, 0));
-                videoRepository.save(video);
-            }
-        }
 
-        videos.sort(Comparator.comparing(Video::getDownloadTimestamp).reversed());
+        videos.sort(Comparator.comparing(Video::getId).reversed());
 
         model.addAttribute("videos", videos);
-        model.addAttribute("shows", videoRepository.findDistinctShowValues());
         return "videos";
-    }
-
-    @GetMapping("/videos/{show}")
-    public List<Video> getByShow(@PathVariable String show) {
-
-        return videoRepository.findAllByShow(show);
     }
 
     @PostMapping("/videos/delete/{id}")
     public String deleteItem(@PathVariable("id") Long id) {
+
+        LOGGER.info("Deleting video with ID: {}", id);
 
         videoRepository.deleteById(id);
         return "redirect:/videos";
@@ -67,6 +65,8 @@ public class VideoController {
     @PostMapping("/videos/force-check")
     @ResponseBody
     public void forceCheck() {
+
+        LOGGER.info("Forcing video check");
 
         videoDownloadService.forceProcessVideosAsync();
     }
