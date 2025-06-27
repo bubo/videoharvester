@@ -94,6 +94,7 @@ public class VideoDownloadService {
                 video.setDownloadTimestamp(LocalDateTime.of(1970, 1, 1, 0, 0));
             }
             videoRepository.saveAll(newVideos);
+            return true;
         }
         return false;
     }
