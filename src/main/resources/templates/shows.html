@@ -19,6 +19,7 @@
             <th>ID</th>
             <th>Title</th>
             <th>URL</th>
+            <th>Status</th>
             <th>Action</th>
         </tr>
         </thead>
@@ -28,6 +29,7 @@
             <td th:text="${show.id}"></td>
             <td th:text="${show.title}"></td>
             <td th:text="${show.url}"></td>
+            <td th:text="${show.isEnabled} ? 'Enabled' : 'Disabled'"></td>
             <td class="d-flex">
                 <form method="get"
                       th:action="@{/shows/edit/{showId}(showId=${show.id})}">
