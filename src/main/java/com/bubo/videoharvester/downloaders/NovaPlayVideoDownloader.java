@@ -23,16 +23,17 @@ public class NovaPlayVideoDownloader extends BaseVideoDownloader {
     @Override
     protected String getCssQuery() {
 
-        return "div[data-sentry-element=ShowWrapper]";
+        return "div[data-sentry-component=ShowThumb]";
     }
 
     @Override
     protected String extractTitle(Element videoElement) {
 
         String title =
-                Optional.ofNullable(videoElement.selectFirst("p[class^=cards-shared__VideoTitle]")).map(Element::text)
+                Optional.ofNullable(videoElement.selectFirst("h3[class^=cards-shared__VideoTitle]")).map(Element::text)
                         .orElse("");
-        String subtitle = Optional.ofNullable(videoElement.selectFirst("p[class^=cards-shared__VideoSubTitle]"))
+
+        String subtitle = Optional.ofNullable(videoElement.selectFirst("h4[class^=cards-shared__VideoSubTitle]"))
                 .map(Element::text).orElse("");
 
         String[] parts = title.split("\\(");
@@ -41,6 +42,11 @@ public class NovaPlayVideoDownloader extends BaseVideoDownloader {
                       ? parts[1].replace(")", "").trim()
                       : "";
 
-        return formattedTitle + " " + subtitle + " (" + date + ")";
+        if (!date.isEmpty()) {
+            return formattedTitle + " " + subtitle + " (" + date + ")";
+        } else {
+            return formattedTitle + " " + subtitle;
+        }
     }
+
 }
