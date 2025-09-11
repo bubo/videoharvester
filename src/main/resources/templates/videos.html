@@ -36,6 +36,12 @@
                       th:action="@{/videos/delete/{videoId}(videoId=${video.id})}">
                     <button class="btn btn-danger btn-sm" type="submit">Delete</button>
                 </form>
+                <th:block th:if="${video.status == T(com.bubo.videoharvester.entity.Video.Status).DOWNLOADED}">
+                    <form method="post" onsubmit="return confirm('Are you sure you want to delete this video file?');"
+                          th:action="@{/videos/deleteFile/{videoId}(videoId=${video.id})}">
+                        <button class="btn btn-danger btn-sm" type="submit">Delete File</button>
+                    </form>
+                </th:block>
             </td>
         </tr>
         </tbody>
