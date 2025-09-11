@@ -29,7 +29,7 @@
             <td th:text="${show.id}"></td>
             <td th:text="${show.title}"></td>
             <td th:text="${show.url}"></td>
-            <td th:text="${show.isEnabled} ? 'Enabled' : 'Disabled'"></td>
+            <td th:text="${show.isEnabled != null && show.isEnabled} ? 'Enabled' : 'Disabled'"></td>
             <td class="d-flex">
                 <form method="get"
                       th:action="@{/shows/edit/{showId}(showId=${show.id})}">

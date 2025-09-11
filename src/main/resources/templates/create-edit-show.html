@@ -24,8 +24,8 @@
         <div class="form-group">
             <label for="isEnabled">Show Status</label>
             <select class="form-control" id="isEnabled" name="isEnabled">
-                <option th:selected="${show.isEnabled}" th:value="true">Enabled</option>
-                <option th:selected="${!show.isEnabled}" th:value="false">Disabled</option>
+                <option th:selected="${show.isEnabled != null && show.isEnabled}" th:value="true">Enabled</option>
+                <option th:selected="${show.isEnabled == null || !show.isEnabled}" th:value="false">Disabled</option>
             </select>
         </div>
         <div class="form-group">
