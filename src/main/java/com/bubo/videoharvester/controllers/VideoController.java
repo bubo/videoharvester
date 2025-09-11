@@ -62,6 +62,15 @@ public class VideoController {
         return "redirect:/videos";
     }
 
+    @PostMapping("/videos/deleteFile/{id}")
+    public String deleteFile(@PathVariable("id") Long id) {
+
+        LOGGER.info("Deleting file for video with ID: {}", id);
+
+        videoDownloadService.deleteVideoFile(id);
+        return "redirect:/videos";
+    }
+
     @PostMapping("/videos/force-check")
     @ResponseBody
     public void forceCheck() {

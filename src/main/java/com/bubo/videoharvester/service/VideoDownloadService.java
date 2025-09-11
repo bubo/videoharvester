@@ -7,11 +7,14 @@ import com.bubo.videoharvester.notifications.HomeAssistantNotifier;
 import com.bubo.videoharvester.notifications.NotificationService;
 import com.bubo.videoharvester.repository.ShowRepository;
 import com.bubo.videoharvester.repository.VideoRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -20,6 +23,8 @@ import static com.bubo.videoharvester.entity.Video.Status.DOWNLOADING;
 
 @Service
 public class VideoDownloadService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(VideoDownloadService.class);
 
     private final Map<String, BaseVideoDownloader> downloaderMap;
 
@@ -50,6 +55,20 @@ public class VideoDownloadService {
     public void forceProcessVideosAsync() {
 
         processVideos();
+    }
+
+    public void deleteVideoFile(Long videoId) {
+
+        Video video = videoRepository.findById(videoId).orElseThrow();
+        File myObj = new File(video.getFilePath());
+        if (myObj.delete()) {
+            video.setStatus(Video.Status.DELETED);
+            video.setFilePath(null);
+            videoRepository.save(video);
+            LOGGER.info("Deleted video file: {}", video.getFilePath());
+        } else {
+            LOGGER.error("Failed to delete video file: {}", video.getFilePath());
+        }
     }
 
     @Scheduled(cron = "${videoharvester.cron}")
@@ -89,7 +108,8 @@ public class VideoDownloadService {
         }
     }
 
-    private boolean initialiseDatabase(Show show, List<Video> newVideos) {
+    //package private for testing purposes
+    boolean initialiseDatabase(Show show, List<Video> newVideos) {
 
         if (videoRepository.countByShow(show) == 0) {
 
