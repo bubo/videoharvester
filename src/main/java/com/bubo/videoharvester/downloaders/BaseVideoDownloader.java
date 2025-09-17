@@ -29,7 +29,8 @@ public abstract class BaseVideoDownloader {
         try {
             Document doc = Jsoup.connect(show.getUrl()).get();
 
-            return doc.select(getCssQuery()).stream().map(element -> parseVideo(element, show)).toList();
+            return doc.select(getCssQuery()).stream().filter(element -> !element.children().isEmpty())
+                    .map(element -> parseVideo(element, show)).toList();
 
         } catch (IOException e) {
             getLogger().error("Error message: ", e);
