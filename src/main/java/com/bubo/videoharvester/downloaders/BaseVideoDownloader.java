@@ -8,10 +8,14 @@ import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -49,11 +53,43 @@ public abstract class BaseVideoDownloader {
 
         try {
             getLogger().info("Downloading video with url: {}", video.getUrl());
+
             String file = show.getPath() + "/" + video.getTitle() + ".%(ext)s";
-            ProcessBuilder processBuilder = new ProcessBuilder("/bin/bash", downloadScript, "-o", file, video.getUrl());
-            processBuilder.inheritIO();
+            ProcessBuilder processBuilder = new ProcessBuilder("/bin/bash", downloadScript, "-o", file, video.getUrl(), "--no-part");
+
+            getLogger().info("Executing command: {}", processBuilder.command());
+
             Process process = processBuilder.start();
+
+            ExecutorService executor = Executors.newFixedThreadPool(2);
+            executor.submit(() -> {
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        if (!line.contains("[download]") || line.contains("100%")) {
+                            getLogger().info("[Process stdout] {}", line);
+                        } else {
+                            getLogger().debug("[Process stdout] {}", line); // Прогрес на DEBUG ниво
+                        }
+                    }
+                } catch (IOException e) {
+                    getLogger().error("Error reading stdout: ", e);
+                }
+            });
+
+            executor.submit(() -> {
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        getLogger().error("[Process stderr] {}", line); // stderr обикновено се логва като грешка
+                    }
+                } catch (IOException e) {
+                    getLogger().error("Error reading stderr: ", e);
+                }
+            });
+
             int exitCode = process.waitFor();
+            executor.shutdown();
 
             if (exitCode == 0) {
                 getLogger().info("Downloaded {} in {}", video.getTitle(), show.getPath());
