@@ -25,6 +25,8 @@ public class Video {
 
     private int retryCount = 0;
 
+    private Double progress = 0.0;
+
     private LocalDateTime nextRetryTimestamp;
 
     @ManyToOne

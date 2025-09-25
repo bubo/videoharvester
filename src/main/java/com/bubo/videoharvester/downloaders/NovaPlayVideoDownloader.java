@@ -1,5 +1,7 @@
 package com.bubo.videoharvester.downloaders;
 
+import com.bubo.videoharvester.entity.Video;
+import com.bubo.videoharvester.repository.VideoRepository;
 import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +15,12 @@ public class NovaPlayVideoDownloader extends BaseVideoDownloader {
     public static final String TITLE = "novaPlay";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NovaPlayVideoDownloader.class);
+
+    private final VideoRepository videoRepository;
+
+    public NovaPlayVideoDownloader(VideoRepository videoRepository) {
+        this.videoRepository = videoRepository;
+    }
 
     @Override
     protected Logger getLogger() {
@@ -47,6 +55,10 @@ public class NovaPlayVideoDownloader extends BaseVideoDownloader {
         } else {
             return formattedTitle + " " + subtitle;
         }
+    }
+
+    protected void  saveVideo(Video video) {
+        videoRepository.save(video);
     }
 
 }
