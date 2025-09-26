@@ -24,7 +24,9 @@ public class Show {
 
     private String provider;
 
-    private Boolean isEnabled;
+    private Boolean isEnabled = false;
+
+    private Boolean downloadOnlyEpisodes =  false;
 
     @OneToMany(mappedBy = "show", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Video> videos;

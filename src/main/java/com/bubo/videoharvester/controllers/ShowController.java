@@ -71,6 +71,7 @@ public class ShowController {
             existingShow.setUrl(show.getUrl());
             existingShow.setPath(show.getPath());
             existingShow.setProvider(show.getProvider());
+            existingShow.setDownloadOnlyEpisodes(show.getDownloadOnlyEpisodes());
             showRepository.save(existingShow);
             LOGGER.info("Updated show: {}", show);
         } else {

@@ -24,15 +24,13 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="show : ${shows}" th:onclick="|window.location.href='/videos?showId=' + ${show.id}|"
-            style="cursor: pointer;">
-            <td th:text="${show.id}"></td>
-            <td th:text="${show.title}"></td>
-            <td th:text="${show.url}"></td>
+        <tr th:each="show : ${shows}">
+            <td><a th:href="@{/videos(showId=${show.id})}" th:text="${show.id}"></a></td>
+            <td><a th:href="@{/videos(showId=${show.id})}" th:text="${show.title}"></a></td>
+            <td><a th:href="${show.url}" th:text="${show.url}"></a></td>
             <td th:text="${show.isEnabled != null && show.isEnabled} ? 'Enabled' : 'Disabled'"></td>
             <td class="d-flex">
-                <form method="get"
-                      th:action="@{/shows/edit/{showId}(showId=${show.id})}">
+                <form method="get" th:action="@{/shows/edit/{showId}(showId=${show.id})}">
                     <button class="btn btn-primary btn-sm" type="submit">Edit</button>
                 </form>
                 <form method="post" onsubmit="return confirm('Are you sure you want to delete this show?');"

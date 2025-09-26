@@ -12,7 +12,7 @@
     <div class="mb-4">
         <a class="btn btn-secondary" href="/shows">Back to Shows</a>
     </div>
-    <form class="p-4 border rounded shadow-sm" method="post"
+    <form class="p-4 border rounded shadow-sm" method="post" th:object="${show}"
           th:action="@{${show.id != null} ? '/shows/edit/' + ${show.id} : '/shows/create'}">
 
         <!-- Show Title -->
@@ -21,12 +21,15 @@
             <input class="form-control" id="title" name="title" placeholder="Enter show title" required
                    th:value="${show.title}" type="text">
         </div>
-        <div class="form-group">
-            <label for="isEnabled">Show Status</label>
-            <select class="form-control" id="isEnabled" name="isEnabled">
-                <option th:selected="${show.isEnabled != null && show.isEnabled}" th:value="true">Enabled</option>
-                <option th:selected="${show.isEnabled == null || !show.isEnabled}" th:value="false">Disabled</option>
-            </select>
+        <div class="form-group required-control form-check">
+            <input type="checkbox" class="form-check-input" id="isEnabled" name="isEnabled" th:checked="*{isEnabled}"
+                   value="true"/>
+            <label class="form-check-label" for="isEnabled">Enabled</label>
+        </div>
+        <div class="form-group required-control form-check">
+            <input type="checkbox" class="form-check-input" id="downloadOnlyEpisodes" name="downloadOnlyEpisodes"
+                   th:checked="*{downloadOnlyEpisodes}" value="true"/>
+            <label class="form-check-label" for="downloadOnlyEpisodes">Download only episodes</label>
         </div>
         <div class="form-group">
             <label for="url">URL</label>

@@ -133,11 +133,16 @@ public abstract class BaseVideoDownloader {
         Matcher partMatcher = PART_PATTERN.matcher(title);
 
         if (!seasonMatcher.find() || !episodeMatcher.find()) {
-            return null;
+            if (show.getDownloadOnlyEpisodes()) {
+                return null;
+            } else {
+                return new Video(title, videoUrl, show);
+            }
+        } else {
+            int season = Integer.parseInt(seasonMatcher.group(1));
+            int episode = Integer.parseInt(episodeMatcher.group(1));
+            String part = partMatcher.find() ? ".part" + partMatcher.group(1) : "";
+            return new Video(show.getTitle() + String.format(".S%02dE%02d", season, episode) + part, videoUrl, show);
         }
-        int season = Integer.parseInt(seasonMatcher.group(1));
-        int episode = Integer.parseInt(episodeMatcher.group(1));
-        String part = partMatcher.find() ? ".part" + partMatcher.group(1) : "";
-        return new Video(show.getTitle() + String.format(".S%02dE%02d", season, episode) + part, videoUrl, show);
     }
 }
