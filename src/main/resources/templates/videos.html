@@ -27,11 +27,11 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="video : ${videos}">
+        <tr th:each="video : ${videos}" th:id="${video.id}" th:attr="data-status=${video.status}">
             <td th:text="${video.id}"></td>
             <td th:text="${video.title}"></td>
             <td th:text="${#temporals.format(video.downloadTimestamp, 'dd-MM-yyyy HH:mm')}">2024-10-22</td>
-            <td th:text="${video.status}"></td>
+            <td id="status-${video.id}" class="status-td" th:text="${video.status == T(com.bubo.videoharvester.entity.Video.Status).FAILED} ? ${video.status} + ' (' + ${video.retryCount} + ' times)' : ${video.status}"></td>
             <td th:text="${video.fileSize} + ' mb'"></td>
             <td>
                 <form method="post" onsubmit="return confirm('Are you sure you want to delete this video?');"
@@ -68,6 +68,28 @@
             });
         });
     });
+    function updateProgress() {
+        document.querySelectorAll('tr[data-status="DOWNLOADING"]').forEach(function(row) {
+            var videoId = row.id; // Предполагам <tr th:id="${video.id}" data-status="${video.status}">
+            fetch('/videos/' + videoId)
+                .then(response => response.json())
+                .then(data => {
+                    var statusTd = row.querySelector('.status-td'); // Или #status-${videoId}
+                    if (data.status === 'DOWNLOADING') {
+                        statusTd.textContent = data.status + ' (' + data.progress + '%)';
+                    } else {
+                        statusTd.textContent = data.status; // Обнови статуса, ако е променен
+                        row.removeAttribute('data-status'); // Премахни от обновяването
+                    }
+                })
+                .catch(error => console.error('Error updating progress for video ' + videoId, error));
+        });
+    }
+
+    // Обнови всеки 15 секунди
+    setInterval(updateProgress, 15000);
+    // Първоначално обновяване
+    updateProgress();
 </script>
 </body>
 </html>

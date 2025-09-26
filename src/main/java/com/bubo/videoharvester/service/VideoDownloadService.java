@@ -60,6 +60,9 @@ public class VideoDownloadService {
     public void deleteVideoFile(Long videoId) {
 
         Video video = videoRepository.findById(videoId).orElseThrow();
+        if (video.getFilePath() == null) {
+            return;
+        }
         File myObj = new File(video.getFilePath());
         if (myObj.delete()) {
             video.setStatus(Video.Status.DELETED);
