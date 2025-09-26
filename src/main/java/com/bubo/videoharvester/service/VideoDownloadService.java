@@ -57,21 +57,21 @@ public class VideoDownloadService {
         processVideos();
     }
 
-    public void deleteVideoFile(Long videoId) {
+    public Long deleteVideoFile(Long videoId) {
 
         Video video = videoRepository.findById(videoId).orElseThrow();
-        if (video.getFilePath() == null) {
-            return;
+        if (video.getFilePath() != null) {
+            File myObj = new File(video.getFilePath());
+            if (myObj.delete()) {
+                video.setStatus(Video.Status.DELETED);
+                video.setFilePath(null);
+                videoRepository.save(video);
+                LOGGER.info("Deleted video file: {}", video.getFilePath());
+            } else {
+                LOGGER.error("Failed to delete video file: {}", video.getFilePath());
+            }
         }
-        File myObj = new File(video.getFilePath());
-        if (myObj.delete()) {
-            video.setStatus(Video.Status.DELETED);
-            video.setFilePath(null);
-            videoRepository.save(video);
-            LOGGER.info("Deleted video file: {}", video.getFilePath());
-        } else {
-            LOGGER.error("Failed to delete video file: {}", video.getFilePath());
-        }
+        return video.getShow().getId();
     }
 
     @Scheduled(cron = "${videoharvester.cron}")
@@ -89,7 +89,7 @@ public class VideoDownloadService {
             allVideosToProcess.addAll(newVideos);
             allVideosToProcess.addAll(
                     videoRepository.findByShowAndStatusAndNextRetryTimestampBefore(show, Video.Status.FAILED,
-                                                                                   LocalDateTime.now()));
+                            LocalDateTime.now()));
 
             for (Video video : allVideosToProcess) {
 

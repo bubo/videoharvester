@@ -66,9 +66,9 @@ public class VideoController {
 
         LOGGER.info("Deleting video with ID: {}", id);
 
-        videoDownloadService.deleteVideoFile(id);
+        Long showId = videoDownloadService.deleteVideoFile(id);
         videoRepository.deleteById(id);
-        return "redirect:/videos";
+        return "redirect:/videos?showId=" + showId;
     }
 
     @PostMapping("/videos/deleteFile/{id}")
@@ -76,8 +76,9 @@ public class VideoController {
 
         LOGGER.info("Deleting file for video with ID: {}", id);
 
-        videoDownloadService.deleteVideoFile(id);
-        return "redirect:/videos";
+
+        Long showId = videoDownloadService.deleteVideoFile(id);
+        return "redirect:/videos?showId=" + showId;
     }
 
     @PostMapping("/videos/force-check")
