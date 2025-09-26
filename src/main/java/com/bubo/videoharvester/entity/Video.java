@@ -29,6 +29,8 @@ public class Video {
 
     private LocalDateTime nextRetryTimestamp;
 
+    private Double fileSize = 0.0;
+
     @ManyToOne
     @JoinColumn(name = "show_id", nullable = false)
     private Show show;

@@ -9,10 +9,12 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -27,7 +29,10 @@ public abstract class BaseVideoDownloader {
     private static final Pattern SEASON_PATTERN = Pattern.compile("[Сс][Ее][Зз][Оо][Нн]\\s*[-:]*\\s*(\\d+)", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
     private static final Pattern EPISODE_PATTERN = Pattern.compile("[Ее][Пп][Ии][Зз][Оо][Дд]\\s*[-:]*\\s*(\\d+)", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
     private static final Pattern PART_PATTERN = Pattern.compile("[Чч][Аа][Сс][Тт]\\s*[-:]*\\s*(\\d+)", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
-    private static final Pattern progressPattern = Pattern.compile("\\[download\\]\\s*(\\d+\\.\\d+)%");
+    private static final Pattern PROGRESS_PATTERN = Pattern.compile("\\[download\\]\\s*(\\d+\\.\\d+)%");
+    private static final Pattern PATH_PATTERN = Pattern.compile("\\[FixupM3u8\\].*?\"([^\"]+)\"");
+
+    private static final double BYTES_TO_MB = 1024.0 * 1024.0; // 1 MB = 1,048,576 bytes
 
     protected abstract String getCssQuery();
 
@@ -57,8 +62,8 @@ public abstract class BaseVideoDownloader {
         try {
             getLogger().info("Downloading video with url: {}", video.getUrl());
 
-            String file = show.getPath() + "/" + video.getTitle() + ".%(ext)s";
-            ProcessBuilder processBuilder = new ProcessBuilder("/bin/bash", downloadScript, "-o", file, video.getUrl(), "--no-part");
+            String fileName = show.getPath() + "/" + video.getTitle() + ".%(ext)s";
+            ProcessBuilder processBuilder = new ProcessBuilder("/bin/bash", downloadScript, "-o", fileName, video.getUrl(), "--no-part");
 
             getLogger().info("Executing command: {}", processBuilder.command());
 
@@ -75,13 +80,26 @@ public abstract class BaseVideoDownloader {
                             getLogger().debug("[Process stdout] {}", line);
                         }
 
-                        Matcher matcher = progressPattern.matcher(line);
+                        Matcher matcher = PROGRESS_PATTERN.matcher(line);
                         if (matcher.find()) {
                             double currentProgress = Double.parseDouble(matcher.group(1));
                             if (currentProgress - video.getProgress() >= 3.0 || line.contains("100%")) {
                                 video.setProgress(currentProgress);
                                 saveVideo(video);
                                 getLogger().info("[Process stdout] Progress updated: {}%", currentProgress);
+                            }
+                        }
+
+                        Matcher pathMatcher = PATH_PATTERN.matcher(line);
+                        if (pathMatcher.find()) {
+                            String filePath = pathMatcher.group(1);
+                            File file = new File(filePath);
+                            if (file.exists()) {
+                                getLogger().info("Extracted file path: {}", filePath);
+                                video.setFilePath(filePath);
+                                video.setFileSize(getFileSizeInMB(file));
+                            } else {
+                                getLogger().error("File does not exist: {}", filePath);
                             }
                         }
                     }
@@ -108,7 +126,6 @@ public abstract class BaseVideoDownloader {
                 getLogger().info("Downloaded {} in {}", video.getTitle(), show.getPath());
                 video.setDownloadTimestamp(LocalDateTime.now());
                 video.setProgress(100.0);
-                video.setFilePath(file);
                 return true;
             } else {
                 getLogger().error("Download failed with code {}", exitCode);
@@ -144,5 +161,17 @@ public abstract class BaseVideoDownloader {
             String part = partMatcher.find() ? ".part" + partMatcher.group(1) : "";
             return new Video(show.getTitle() + String.format(".S%02dE%02d", season, episode) + part, videoUrl, show);
         }
+    }
+
+    public double getFileSizeInMB(File file) {
+        if (file == null || !file.exists()) {
+            getLogger().warn("Cannot ge file size: file is null or does not exist");
+            return -1.0;
+        }
+        long sizeInBytes = file.length();
+        double sizeInMB = sizeInBytes / BYTES_TO_MB;
+        sizeInMB = Double.parseDouble(String.format(Locale.US, "%.2f", sizeInMB));
+        getLogger().info("File {} size: {} MB", file.getAbsolutePath(), String.format("%.2f", sizeInMB));
+        return sizeInMB;
     }
 }
