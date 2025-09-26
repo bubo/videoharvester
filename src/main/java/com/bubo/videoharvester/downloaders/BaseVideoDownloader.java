@@ -107,6 +107,7 @@ public abstract class BaseVideoDownloader {
             if (exitCode == 0) {
                 getLogger().info("Downloaded {} in {}", video.getTitle(), show.getPath());
                 video.setDownloadTimestamp(LocalDateTime.now());
+                video.setProgress(100.0);
                 video.setFilePath(file);
                 return true;
             } else {
