@@ -44,6 +44,12 @@
                         <button class="btn btn-danger btn-sm" type="submit">Delete File</button>
                     </form>
                 </th:block>
+                <th:block th:if="${video.status == T(com.bubo.videoharvester.entity.Video.Status).FAILED }">
+                    <form method="get" onsubmit="return confirm('Are you sure you want to restart this video file?');"
+                          th:action="@{/videos/retry/{videoId}(videoId=${video.id})}">
+                        <button class="btn btn-primary btn-sm" type="submit">Retry</button>
+                    </form>
+                </th:block>
             </td>
         </tr>
         </tbody>

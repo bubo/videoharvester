@@ -89,4 +89,13 @@ public class VideoController {
 
         videoDownloadService.forceProcessVideosAsync();
     }
+
+    @GetMapping("/videos/retry/{id}")
+    public String retryVideo(@PathVariable("id") Long id) {
+
+        LOGGER.info("Reseting retry interval for video with ID: {}", id);
+
+        Long showId = videoDownloadService.retryVideo(id);
+        return "redirect:/videos?showId=" + showId;
+    }
 }

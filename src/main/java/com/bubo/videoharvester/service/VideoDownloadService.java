@@ -154,4 +154,12 @@ public class VideoDownloadService {
 
         return videos.stream().filter(v -> !existingUrls.contains(v.getUrl())).toList();
     }
+
+    public Long retryVideo(Long videoId) {
+        Video video = videoRepository.findById(videoId).orElseThrow();
+        video.setNextRetryTimestamp(LocalDateTime.now());
+        videoRepository.save(video);
+
+        return video.getShow().getId();
+    }
 }

@@ -85,6 +85,7 @@ public abstract class BaseVideoDownloader {
                             double currentProgress = Double.parseDouble(matcher.group(1));
                             if (currentProgress - video.getProgress() >= 3.0 || line.contains("100%")) {
                                 video.setProgress(currentProgress);
+                                video.setRetryCount(0);
                                 saveVideo(video);
                                 getLogger().info("[Process stdout] Progress updated: {}%", currentProgress);
                             }
@@ -98,6 +99,7 @@ public abstract class BaseVideoDownloader {
                                 getLogger().info("Extracted file path: {}", filePath);
                                 video.setFilePath(filePath);
                                 video.setFileSize(getFileSizeInMB(file));
+                                saveVideo(video);
                             } else {
                                 getLogger().error("File does not exist: {}", filePath);
                             }
